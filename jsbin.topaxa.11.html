@@ -1,0 +1,1105 @@
+<!DOCTYPE html>
+<!--
+Created using JS Bin
+http://jsbin.com
+
+Copyright (c) 2016 by arpadvas (http://jsbin.com/topaxa/11/edit)
+
+Released under the MIT license: http://jsbin.mit-license.org
+-->
+<meta name="robots" content="noindex">
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Survival's Land 2.0</title>
+<style id="jsbin-css">
+
+/*general-appearance----------------------------------------*/
+
+* {
+    box-sizing: border-box;
+    /*border: 1px solid red;*/
+}
+
+body {
+  margin: 0;
+  padding: 0;
+}
+
+[class*="col-"] {
+    float: left;
+    width: 100%;
+}
+
+.row {
+  padding: 10px;
+}
+
+.row::after {
+    content: "";
+    clear: both;
+    display: block;
+}
+
+#intro {
+  display: block;
+}
+
+#navigation {
+  display: none;
+}
+
+#main {
+  display: none;
+}
+
+.table {
+    border: 1px solid black;
+    height: 600px;
+    padding: 0px 10px;
+}
+
+.list {
+    height: 250px;
+}
+
+#start {
+  display: none;
+}
+
+#text {
+  overflow-y: scroll;
+}
+
+.thick {
+    font-weight: bold;
+}
+
+
+/*media-quires-----------------------------------------------*/
+
+@media only screen and (min-width: 600px) {
+    /* For tablets: */
+    .col-m-1 {width: 8.33%;}
+    .col-m-2 {width: 16.66%;}
+    .col-m-3 {width: 25%;}
+    .col-m-4 {width: 33.33%;}
+    .col-m-5 {width: 41.66%;}
+    .col-m-6 {width: 50%;}
+    .col-m-7 {width: 58.33%;}
+    .col-m-8 {width: 66.66%;}
+    .col-m-9 {width: 75%;}
+    .col-m-10 {width: 83.33%;}
+    .col-m-11 {width: 91.66%;}
+    .col-m-12 {width: 100%;}
+}
+@media only screen and (min-width: 768px) {
+    /* For desktop: */
+    .col-1 {width: 8.33%;}
+    .col-2 {width: 16.66%;}
+    .col-3 {width: 25%;}
+    .col-4 {width: 33.33%;}
+    .col-5 {width: 41.66%;}
+    .col-6 {width: 50%;}
+    .col-7 {width: 58.33%;}
+    .col-8 {width: 66.66%;}
+    .col-9 {width: 75%;}
+    .col-10 {width: 83.33%;}
+    .col-11 {width: 91.66%;}
+    .col-12 {width: 100%;}
+}
+
+
+</style>
+</head>
+<body>
+  
+
+  
+  
+  <div class="row" id="intro">
+    <div class="col-12 col-m-12">
+        <p>Welcome to Survivers' Land. After a global war our known world went back to the Stone Age. A few of survivors managed to get a tiny piece of land remained unburnt. They need to tackle with the changed environment that was born after toxic gases had poisoned life.</p>
+        <h3>Create your character!</h3>
+        <h4>Name</h4>
+        <input id="name" value="Chlovia"></input>
+        <h4>Gender</h4>
+        <select id="gender">
+          <option value="female">Female</option>
+          <option value="male">Male</option>
+        </select>
+        <button id="button">Create</button>
+        <p id="confirmation"></p>
+        <button id="start">Start</button>
+    </div> 
+  </div>
+  
+  <div class="row" id="navigation">
+    <div class="col-12 col-m-12">
+        <button id="button-n">N</button>
+        <button id="button-ne">NE</button>
+        <button id="button-e">E</button>
+        <button id="button-se">SE</button>
+        <button id="button-s">S</button>
+        <button id="button-sw">SW</button>
+        <button id="button-w">W</button>
+        <button id="button-nw">NW</button>
+    </div> 
+  </div>
+
+  <div class="row" id="main">
+     <div class="col-4 col-m-12 table">
+       <p id="coordinates"></p>
+       <p id="name2"></p>
+       <p id="gender2"></p>
+       <p id="level"></p>
+       <p id="attack"></p>
+       <p id="damage"></p>
+       <p id="maxhp"></p>
+       <p id="acthp"></p>
+    </div>
+     <div id ="text" class="col-4 col-m-12 table">
+       <p>After almost starving to death you have just arrived to the place called Survivers' Land. You leave the burnt landscape behind and arrive to the edge of a forest. Now you need to discover this area and tackle with the ordeals you are going to face. You have one weapon which is a knife.</p>
+     </div>
+     <div class="col-4 col-m-12 table">
+       <p>Item list</p>
+       <div id="itemlist" class="list"></div>
+       <p>Weapon list</p>
+       <div id="weaponlist" class="list"></div>
+     </div>
+  </div>
+
+
+
+  <script id="jsbin-javascript">
+////////////////////////////////////////////////////////////////////////////////////////////////////////survivals-land2.0-last good////////////////////////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////itemlist///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+function Item (id, name) {
+  this.id = id;
+  this.name = name;
+}
+
+var items = new Array();
+items[0] = new Item(1, "painkiller");
+items[1] = new Item(2, "rope");
+items[2] = new Item(3, "health elixir");
+items[3] = new Item(4, "miracle cure");
+
+//to add a new item
+//add it to items array
+//add its feature to useItem function
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////weapon-list////////////////////////////////////////////////////////////////////////////////////////////////////
+
+function Weapon (id, name, damageBonus) {
+  this.id = id;
+  this.name = name;
+  this.damageBonus = damageBonus; 
+}
+
+var weapons = new Array();
+weapons[0] = new Weapon(1, "knife", 1);
+weapons[1] = new Weapon(2, "sword", 5);
+weapons[2] = new Weapon(3, "King Slayer", 50);
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////building-list////////////////////////////////////////////////////////////////////////////////////////////////////
+
+function Building (id, name) {
+  this.id = id;
+  this.name = name;
+}
+
+var buildings = new Array();
+buildings[0] = new Building(1, "Black Tower");
+buildings[1] = new Building(2, "church");
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////kill-counter////////////////////////////////////////////////////////////////////////////////////////////////////
+
+function KillCounter (monsterName, targetNr, killedNr) {
+  this.monsterName = monsterName;
+  this.targetNr = targetNr;
+  this.killedNr = killedNr;
+}
+
+var killCounter = new Array();
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////character-item-list////////////////////////////////////////////////////////////////////////////////////////////
+
+function CharacterItemList (itemID, quantity, name) {
+  this.itemID = itemID;
+  this.quantity = quantity;
+  this.name = name;
+  }
+
+var characterItemList = new Array();
+characterItemList[0] = new CharacterItemList (1, 2, "painkiller");
+characterItemList[1] = new CharacterItemList (2, 1, "rope");
+
+function characterItemLister () {
+  document.getElementById("itemlist").innerHTML ="";  
+  for (i=0; i < characterItemList.length; i++) {
+      var para = document.createElement("P");
+      para.id = "item" + characterItemList[i].itemID;
+      var t = document.createTextNode(characterItemList[i].quantity + " " + characterItemList[i].name);
+      para.appendChild(t);
+      document.getElementById("itemlist").appendChild(para);
+    }
+}
+
+document.getElementById("itemlist").addEventListener("click", function() { 
+  useItem(event.target.id); 
+});
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////character-weapon-list////////////////////////////////////////////////////////////////////////////////////////////
+
+function CharacterWeaponList (weaponID, quantity, name) {
+  this.weaponID = weaponID;
+  this.quantity = quantity;
+  this.name = name;
+  }
+
+var characterWeaponList = new Array();
+characterWeaponList[0] = new CharacterWeaponList (1, 1, "knife");
+characterWeaponList[1] = new CharacterWeaponList (2, 1, "sword");
+
+function characterWeaponLister () {
+  document.getElementById("weaponlist").innerHTML ="";  
+  for (i=0; i < characterWeaponList.length; i++) {
+      var para = document.createElement("P");
+      para.id = characterWeaponList[i].weaponID;
+      var t = document.createTextNode(characterWeaponList[i].quantity + " " + characterWeaponList[i].name);
+      para.appendChild(t);
+      document.getElementById("weaponlist").appendChild(para);
+    }
+}
+
+document.getElementById("weaponlist").addEventListener("click", function() { 
+  takeWeapon(event.target.id); 
+});
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////monster-list///////////////////////////////////////////////////////////////////////////////////////////////////
+
+function Monster (name, level, xp, attack, damage, healthPoints, maxHealthPoints, itemID, itemName, quantity, odd) {
+    this.name = name;
+    this.level = level;
+    this.xp = xp;
+    this.attack = attack;
+    this.damage = damage;
+    this.maxHealthPoints = maxHealthPoints;
+    this.healthPoints = healthPoints;
+    this.itemID = itemID;
+    this.itemName = itemName;
+    this.quantity = quantity;
+    this.odd = odd;
+    }
+
+var monsters = new Array();
+monsters[0] = new Monster("Orc", 1, 15, 60, 5, 15, 15, 1, "painkiller", 2, 60);
+monsters[1] = new Monster("Goblin", 1, 15, 60, 5, 15, 15, 1, "painkiller", 3, 60);
+monsters[2] = new Monster("Pram", 1, 20, 60, 10, 8, 15, 1, "painkiller", 5, 60);
+monsters[3] = new Monster("Level-sucker", 2, 30, 50, 10, 20, 20, 4, "miracle cure", 2, 40);
+monsters[4] = new Monster("Smiling enormity", 2, 30, 50, 10, 25, 25, 1, "painkiller", 3, 50);
+monsters[5] = new Monster("Vampire", 3, 40, 60, 15, 30, 30, 3, "health elixir", 2, 40);
+monsters[6] = new Monster("Office terminator", 3, 45, 60, 17, 35, 35, 1, "painkiller", 3, 80);
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////terrain-generator///////////////////////////////////////////////////////////////////////////////////////////////
+
+function Terrain (xCoordinate, yCoordinate, type, buildingId) {
+  this.xCoordinate = xCoordinate;
+  this.yCoordinate = yCoordinate;
+  this.type = type;
+  this.buildingId = buildingId;
+}
+
+var terrain = new Array();
+terrain[0] = new Terrain(1,1, "forest", 0);
+terrain[1] = new Terrain(1,2, "desert", 0);
+terrain[2] = new Terrain(1,3, "moorland", 0);
+terrain[3] = new Terrain(1,4, "marsh", 0);
+terrain[4] = new Terrain(1,5, "forest", 0);
+terrain[5] = new Terrain(2,1, "mountain", 0);
+terrain[6] = new Terrain(2,2, "moorland", 0);
+terrain[7] = new Terrain(2,3, "desert", 1);
+terrain[8] = new Terrain(2,4, "forest", 2);
+terrain[9] = new Terrain(2,5, "marsh", 0);
+terrain[10] = new Terrain(3,1, "desert", 0);
+terrain[11] = new Terrain(3,2, "moorland", 0);
+terrain[12] = new Terrain(3,3, "marsh", 2);
+terrain[13] = new Terrain(3,4, "desert", 0);
+terrain[14] = new Terrain(3,5, "forest", 0);
+terrain[15] = new Terrain(4,1, "marsh", 0);
+terrain[16] = new Terrain(4,2, "desert", 0);
+terrain[17] = new Terrain(4,3, "marsh", 0);
+terrain[18] = new Terrain(4,4, "moorland", 0);
+terrain[19] = new Terrain(4,5, "desert", 0);
+terrain[20] = new Terrain(5,1, "forest", 0);
+terrain[21] = new Terrain(5,2, "moorland", 0);
+terrain[22] = new Terrain(5,3, "desert", 0);
+terrain[23] = new Terrain(5,4, "marsh", 0);
+terrain[24] = new Terrain(5,5, "forest", 0);
+terrain[25] = new Terrain(1,6, "forest", 2);
+terrain[26] = new Terrain(1,7, "desert", 0);
+terrain[27] = new Terrain(1,8, "moorland", 0);
+terrain[28] = new Terrain(1,9, "marsh", 0);
+terrain[29] = new Terrain(1,10, "forest", 0);
+terrain[30] = new Terrain(2,6, "mountain", 0);
+terrain[31] = new Terrain(2,7, "moorland", 2);
+terrain[32] = new Terrain(2,8, "desert", 0);
+terrain[33] = new Terrain(2,9, "forest", 0);
+terrain[34] = new Terrain(2,10, "marsh", 0);
+terrain[35] = new Terrain(3,6, "desert", 0);
+terrain[36] = new Terrain(3,7, "moorland", 0);
+terrain[37] = new Terrain(3,8, "marsh", 0);
+terrain[38] = new Terrain(3,9, "desert", 0);
+terrain[39] = new Terrain(3,10, "forest", 0);
+terrain[40] = new Terrain(4,6, "marsh", 0);
+terrain[41] = new Terrain(4,7, "desert", 0);
+terrain[42] = new Terrain(4,8, "marsh", 0);
+terrain[43] = new Terrain(4,9, "moorland", 2);
+terrain[44] = new Terrain(4,10, "desert", 0);
+terrain[45] = new Terrain(5,6, "forest", 0);
+terrain[46] = new Terrain(5,7, "moorland", 0);
+terrain[47] = new Terrain(5,8, "desert", 0);
+terrain[48] = new Terrain(5,9, "marsh", 0);
+terrain[49] = new Terrain(5,10, "forest", 2);
+terrain[50] = new Terrain(6,1, "forest", 0);
+terrain[51] = new Terrain(6,2, "desert", 0);
+terrain[52] = new Terrain(6,3, "moorland", 2);
+terrain[53] = new Terrain(6,4, "marsh", 0);
+terrain[54] = new Terrain(6,5, "forest", 0);
+terrain[55] = new Terrain(6,6, "marsh", 0);
+terrain[56] = new Terrain(6,7, "desert", 0);
+terrain[57] = new Terrain(6,8, "marsh", 0);
+terrain[58] = new Terrain(6,9, "moorland", 0);
+terrain[59] = new Terrain(6,10, "desert", 0);
+terrain[60] = new Terrain(7,1, "forest", 0);
+terrain[61] = new Terrain(7,2, "desert", 0);
+terrain[62] = new Terrain(7,3, "moorland", 0);
+terrain[63] = new Terrain(7,4, "marsh", 0);
+terrain[64] = new Terrain(7,5, "forest", 2);
+terrain[65] = new Terrain(7,6, "marsh", 0);
+terrain[66] = new Terrain(7,7, "desert", 0);
+terrain[67] = new Terrain(7,8, "marsh", 0);
+terrain[68] = new Terrain(7,9, "moorland", 0);
+terrain[69] = new Terrain(7,10, "desert", 0);
+terrain[70] = new Terrain(8,1, "forest", 0);
+terrain[71] = new Terrain(8,2, "desert", 0);
+terrain[72] = new Terrain(8,3, "moorland", 0);
+terrain[73] = new Terrain(8,4, "marsh", 2);
+terrain[74] = new Terrain(8,5, "forest", 0);
+terrain[75] = new Terrain(8,6, "marsh", 0);
+terrain[76] = new Terrain(8,7, "desert", 0);
+terrain[77] = new Terrain(8,8, "marsh", 0);
+terrain[78] = new Terrain(8,9, "moorland", 0);
+terrain[79] = new Terrain(8,10, "desert", 0);
+terrain[80] = new Terrain(9,1, "forest", 2);
+terrain[81] = new Terrain(9,2, "desert", 0);
+terrain[82] = new Terrain(9,3, "moorland", 0);
+terrain[83] = new Terrain(9,4, "marsh", 0);
+terrain[84] = new Terrain(9,5, "forest", 2);
+terrain[85] = new Terrain(9,6, "marsh", 0);
+terrain[86] = new Terrain(9,7, "desert", 0);
+terrain[87] = new Terrain(9,8, "marsh", 0);
+terrain[88] = new Terrain(9,9, "moorland", 2);
+terrain[89] = new Terrain(9,10, "desert", 0);
+terrain[90] = new Terrain(10,1, "forest", 0);
+terrain[91] = new Terrain(10,2, "desert", 0);
+terrain[92] = new Terrain(10,3, "moorland", 0);
+terrain[93] = new Terrain(10,4, "marsh", 0);
+terrain[94] = new Terrain(10,5, "forest", 2);
+terrain[95] = new Terrain(10,6, "marsh", 0);
+terrain[96] = new Terrain(10,7, "desert", 0);
+terrain[97] = new Terrain(10,8, "marsh", 2);
+terrain[98] = new Terrain(10,9, "moorland", 0);
+terrain[99] = new Terrain(10,10, "desert", 0);
+
+function terrainIdentifier (x, y) {
+  for (i = 0; i < terrain.length; i++) { 
+    if (x === terrain[i].xCoordinate && y === terrain[i].yCoordinate) {
+      document.getElementById("text").innerHTML ="";
+      var para = document.createElement("P");
+      var t = document.createTextNode("You are walking in a " + terrain[i].type + ".");
+      para.appendChild(t);
+      document.getElementById("text").appendChild(para);
+      if (terrain[i].buildingId !== 0) {
+        var para2 = document.createElement("P");
+        para2.id = "building" + terrain[i].buildingId;
+        para2.className = "thick";
+        var t2 = document.createTextNode("You run into a building. This is a " + buildings[terrain[i].buildingId-1].name + ".");
+        para2.appendChild(t2);
+        document.getElementById("text").appendChild(para2);
+
+      }
+    }
+}
+}
+
+document.getElementById("text").addEventListener("click", function() { 
+  enterBuilding(event.target.id); 
+});
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////character-generator////////////////////////////////////////////////////////////////////////////////////////////
+
+function character (name, gender) {
+  character.name = name;
+  character.gender = gender;
+  character.level = 1;
+  character.xCoordinate = 1;
+  character.yCoordinate = 3;
+  character.maxExpBuffer = 100;
+  character.actExpBuffer = 0;
+  character.attack = 50;
+  character.damage = 20;
+  character.maxHealthPoints = 50;
+  character.actHealthPoints = 50;
+  character.weaponInHand = weapons[0];
+  character.questOneFirstEntry = true;
+  character.questOneIsFirstTaskDone = false;
+  character.questOneIsSecondTaskDone = false;
+  character.showCoordinates = function () {
+    document.getElementById("coordinates").innerHTML = "Your coordinates are: " + character.xCoordinate + ", " + character.yCoordinate + ".";
+    document.getElementById('start').style.display='block';
+  };
+  character.updateDetails = function () {
+    document.getElementById("name2").innerHTML = "Name: " + name;
+    document.getElementById("gender2").innerHTML = "Gender: " + gender;
+    document.getElementById("level").innerHTML = "Level: " + character.level;
+    document.getElementById("attack").innerHTML = "Attack: " + character.attack;
+    document.getElementById("damage").innerHTML = "Damage: " + character.damage;
+    document.getElementById("maxhp").innerHTML = "Max HP: " + character.maxHealthPoints;
+    document.getElementById("acthp").innerHTML = "Act HP: " + character.actHealthPoints;
+  };
+  document.getElementById("confirmation").innerHTML = name + " " + "has been created. If you are ready to play please click on Start!";
+}
+
+function updateDetails() {
+    document.getElementById("level").innerHTML = "Level: " + character.level;
+    document.getElementById("attack").innerHTML = "Attack: " + character.attack;
+    document.getElementById("damage").innerHTML = "Damage: " + character.damage;
+    document.getElementById("maxhp").innerHTML = "Max HP: " + character.maxHealthPoints;
+    document.getElementById("acthp").innerHTML = "Act HP: " + character.actHealthPoints;
+  }
+
+document.getElementById("button").addEventListener("click", function() {
+  character(document.getElementById("name").value, document.getElementById("gender").value);
+  character.showCoordinates();
+});
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////item-change-functions////////////////////////////////////////////////////////////////////////////////////////////
+
+function quantityReducer (itemID) {
+  for (i=0; i < characterItemList.length; i++) {
+    if (itemID === characterItemList[i].itemID) {
+      characterItemList[i].quantity -= 1;
+      if (characterItemList[i].quantity === 0) {
+        var id = "item" + characterItemList[i].itemID;
+        characterItemList.splice(i, 1);
+      }
+    }
+  }
+  characterItemLister();
+  updateDetails();
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////start-function///////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+function start () {
+  document.getElementById("intro").style.display="none";
+  document.getElementById("navigation").style.display="block";
+  document.getElementById("main").style.display="block";
+  character.updateDetails();
+  characterItemLister();
+  characterWeaponLister();
+}
+
+document.getElementById("start").addEventListener("click", function() {
+  start();
+});
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////level-checker////////////////////////////////////////////////////////////////////////////////////////////////////
+
+function levelChecker() {
+  if (character.actExpBuffer >= character.maxExpBuffer) {
+    character.level = character.level + 1;
+    character.actExpBuffer = 0;
+    character.maxExpBuffer = character.maxExpBuffer + character.level*10;
+    character.maxHealthPoints = character.maxHealthPoints + character.level*5;
+    character.actHealthPoints = character.actHealthPoints + character.level*5;
+    var para = document.createElement("P");
+    var t = document.createTextNode("Congrats! Your level is " + character.level + ".");
+    para.appendChild(t);
+    document.getElementById("text").appendChild(para);
+    character.updateDetails();
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////use-item-function/////////////////////////////////////////////////////////////////////////////////////////////////
+
+function useItem(itemId) {
+         switch (itemId) {
+          case "item1":
+             var random = Math.floor((Math.random() * 10) + 1);
+             character.actHealthPoints += random;
+             if (character.actHealthPoints >= character.maxHealthPoints) {
+               character.actHealthPoints = character.maxHealthPoints;
+               var para = document.createElement("P");
+               var t = document.createTextNode("You drink the painkiller. Soon you start feeling better. You got back all of your healt points. Your actual health points are " + character.actHealthPoints + ".");
+               para.appendChild(t);
+               document.getElementById("text").appendChild(para);
+             }
+             else {
+              var para2 = document.createElement("P");
+              t2 = document.createTextNode("You drink the painkiller. Soon you start feeling better. You got back " + random + " health points. Your actual health points are " + character.actHealthPoints + ".");
+              para2.appendChild(t2);
+              document.getElementById("text").appendChild(para2);
+             }
+             quantityReducer(1);
+             break;
+          case "item2":
+             var para3 = document.createElement("P");
+             var t3 = document.createTextNode("You tie up the rope on a tree and start climbing up and down as a training. Woow, you get more stronger by the end of the workout!");
+             para3.appendChild(t3);
+             document.getElementById("text").appendChild(para3);
+             break;
+          case "item3":
+             character.maxHealthPoints = character.maxHealthPoints + 1;
+             var para4 = document.createElement("P");
+             var t4 = document.createTextNode("You drink the health elixir. Something magical happened! You got 1 maximum health points. Your maximum health point are " + character.maxHealthPoints + ".");
+             para4.appendChild(t4);
+             document.getElementById("text").appendChild(para4);
+             quantityReducer(3);
+             break;
+          case "item4":
+             character.actHealthPoints = character.maxHealthPoints;
+             var para5 = document.createElement("P");
+             var t5 = document.createTextNode("You drink the miracle cure. You immediately start feeling the energy! You got back all of your health points. Your actual health poits are " + character.actHealthPoints + ".");
+             para5.appendChild(t5);
+             document.getElementById("text").appendChild(para5);
+             quantityReducer(4);
+             break;
+         }
+
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////enter-building-function////////////////////////////////////////////////////////////////////////////////////////////
+
+function enterBuilding(buildingId) {
+         switch (buildingId) {
+          case "building1":
+             quest1();
+             break;
+          case "building2":
+             var random = Math.floor((Math.random() * 15) + 5);
+             character.actHealthPoints += random;
+             if (character.actHealthPoints >= character.maxHealthPoints) {
+               character.actHealthPoints = character.maxHealthPoints;
+               var para = document.createElement("P");
+               var t = document.createTextNode("You enter the church and start praying whilst kneeling down in front of the altar. Your god is listening to you. You got back all of your healt points. Your actual health points are " + character.actHealthPoints + ".");
+               para.appendChild(t);
+               document.getElementById("text").appendChild(para);
+             }
+             else {
+              var para2 = document.createElement("P");
+              t2 = document.createTextNode("You enter the church and start praying whilst kneeling down in front of the altar. Your god is listening to you. You got back " + random + " health points. Your actual health points are " + character.actHealthPoints + ".");
+              para2.appendChild(t2);
+              document.getElementById("text").appendChild(para2);
+             }
+             updateDetails();
+             break;
+    }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////quest-functions////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//black-tower//
+function quest1() {
+   var killedThreeOrcs = false;
+   for (i=0; i < killCounter.length; i++) {
+    if (killCounter[i].monsterName === "Orc" && killCounter[i].killedNr >= killCounter[i].targetNr) {
+      killedThreeOrcs = true;
+      killCounter.splice(i, 1);
+      }
+   }
+   var isHavingMiracleCure = false;
+   for (i=0; i < characterItemList.length; i++) {
+    if (characterItemList[i].itemID === 4) {
+      isHavingMiracleCure = true;
+      }
+     }
+   if (character.questOneIsFirstTaskDone === false) {
+     if (character.questOneFirstEntry === true) {
+     document.getElementById("text").innerHTML =""; 
+     var para = document.createElement("P");
+     var t = document.createTextNode("You knock on the big black door. An elder man opens the door soon and invite you inside. It turns the man is a knight and he lives here with his family. The knight offers you a lunch that you cannot skip out. He tells you that his daughter is sick and you are the only one who can help. If you want to save his daughter's life come back having a miracle cure. After the delicious meal you leave the tower with the vow of coming back.");
+     para.appendChild(t);
+     document.getElementById("text").appendChild(para);
+     character.questOneFirstEntry = false;
+     }
+   else if (character.questOneFirstEntry === false && isHavingMiracleCure === true) {
+     document.getElementById("text").innerHTML =""; 
+     var para2 = document.createElement("P");
+     var t2 = document.createTextNode("You knock on the door and soon the knight opens the door sadly. He tells you that his daughter is dying... When you take out the miracle cure of your pocket he drags your hand and pull you the daughter's room. She drinks the cure and soon starts feeling better. The knight thanks you and asks you to sit down. He start telling about that lately and orc branch terrorizes his family and asks you if you would be able to help him. You swear that you will do your best. If you want to complete this quest you need to kill three orcs.");
+     para2.appendChild(t2);
+     document.getElementById("text").appendChild(para2);
+     character.questOneIsFirstTaskDone = true;
+     quantityReducer(4);
+     var newKillCounter = new KillCounter ("Orc", 3, 0);
+     killCounter.push(newKillCounter);
+     }
+   else if (character.questOneFirstEntry === false && isHavingMiracleCure === false) {
+     document.getElementById("text").innerHTML =""; 
+     var para3 = document.createElement("P");
+     var t3 = document.createTextNode("The knight is dissapointed that you couldn't find miracle cure to save his daughter's life. Come back when having one.");
+     para3.appendChild(t3);
+     document.getElementById("text").appendChild(para3);
+     }
+   }
+   else if (character.questOneIsFirstTaskDone === true && character.questOneIsSecondTaskDone === false) {
+     if (killedThreeOrcs === true){
+       document.getElementById("text").innerHTML =""; 
+       var para4 = document.createElement("P");
+       var t4 = document.createTextNode("The knight opens the door and gets very hapy and thankful when you tell him you defeated the orcs. The knight gives you a King Slayer as a reward!");
+       para4.appendChild(t4);
+       document.getElementById("text").appendChild(para4);
+       character.questOneIsSecondTaskDone = true;
+       var newitem = new CharacterWeaponList (3, 1, "King Slayer");
+       characterWeaponList.push(newitem);
+       characterWeaponLister();
+     }
+     else if (killedThreeOrcs === false) {
+       document.getElementById("text").innerHTML =""; 
+       var para5 = document.createElement("P");
+       var t5 = document.createTextNode("The knight is dissapointed that you couldn't kill the orcs. Come back once you have completed the quest.");
+       para5.appendChild(t5);
+       document.getElementById("text").appendChild(para5);
+     }
+   }
+  else if (character.questOneIsFirstTaskDone === true && character.questOneIsSecondTaskDone === true) {
+    document.getElementById("text").innerHTML =""; 
+    var para6 = document.createElement("P");
+    var t6 = document.createTextNode("The knight doesn't have new quest for you.");
+    para6.appendChild(t6);
+    document.getElementById("text").appendChild(para6);
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////battle-function////////////////////////////////////////////////////////////////////////////////////////////////////
+
+function killerChecker(monName) {
+  for (i=0; i < killCounter.length; i++) {
+    if (killCounter[i].monsterName === monName) {
+      killCounter[i].killedNr += 1;
+      }
+  }
+}
+
+function battle() {
+  var monstersBasedOnCharacterLevel = new Array();
+  for (i=0; i < monsters.length; i++) {
+    if (monsters[i].level <= character.level && monsters[i].level+2 >= character.level) {
+      monstersBasedOnCharacterLevel.push(monsters[i]);
+    }
+  }
+  var randomMonster = monstersBasedOnCharacterLevel[Math.floor(Math.random() * monstersBasedOnCharacterLevel.length)];
+  var para = document.createElement("P");
+  var t = document.createTextNode("Suddenly you spot a monster! It wants you to be its lunch. You need to fight for your life! Your enemy is a" + " " + randomMonster.name + "! Its level is " + randomMonster.level + " and health points are " + randomMonster.healthPoints + ". Your weapon is a " + character.weaponInHand.name + ".");
+  para.appendChild(t);
+  document.getElementById("text").appendChild(para);
+  var characterHitChance = character.attack+character.level;
+  var totalDamageCharacter = 0;
+  var totalDamageMonster = 0;
+  var roundNumber = 1;
+  var isBattle = true;
+  if (character.actHealthPoints < character.maxHealthPoints * (30 / 100)) {
+    para = document.createElement("P");
+    t = document.createTextNode("You don't feel in the best shape to fight this monster so you run away instead. You might want to drink some painkillers.");
+    para.appendChild(t);
+    document.getElementById("text").appendChild(para);
+    isBattle = false;
+    }
+  while (isBattle) {
+    var randomNumberForCharacter = Math.floor((Math.random() * 100) + 1);
+    var randomNumberForMonster = Math.floor((Math.random() * 100) + 1);
+    var characterDamageThisRound = Math.floor((Math.random() * character.damage) + 1) + character.level + character.weaponInHand.damageBonus;
+    var monsterDamageThisRound = Math.floor((Math.random() * randomMonster.damage) + 1);
+    if (characterHitChance >= randomNumberForCharacter && randomMonster.attack >= randomNumberForMonster) {
+      para = document.createElement("P");
+      t = document.createTextNode(roundNumber + ".round: You hit the" + " " + randomMonster.name + ". Your damage is " + characterDamageThisRound + ". The " + randomMonster.name + " hits you. Its damage is " + monsterDamageThisRound + ".");
+      para.appendChild(t);
+      document.getElementById("text").appendChild(para);
+      totalDamageCharacter += characterDamageThisRound;
+      totalDamageMonster += monsterDamageThisRound;
+      character.actHealthPoints -= monsterDamageThisRound;
+      randomMonster.healthPoints -= characterDamageThisRound;
+      roundNumber = roundNumber + 1;
+      if (character.actHealthPoints > 0 && randomMonster.healthPoints <= 0) {
+        para = document.createElement("P");
+        t = document.createTextNode("Your total damage is " + totalDamageCharacter + ". Your enemy's total damage is " + totalDamageMonster + ". Your actual health points are: " + character.actHealthPoints + ". You defeated the " + randomMonster.name + " and got " + randomMonster.xp + " experience points.");
+        para.appendChild(t);
+        document.getElementById("text").appendChild(para);
+        character.actExpBuffer += randomMonster.xp;
+        randomMonster.healthPoints = randomMonster.maxHealthPoints;
+        levelChecker();
+        character.updateDetails();
+        isBattle = false;
+        killerChecker(randomMonster.name);
+        findingItem(randomMonster.itemID, randomMonster.itemName, randomMonster.quantity, randomMonster.odd);
+      }
+        else if (character.actHealthPoints < character.maxHealthPoints * (30 / 100) && character.actHealthPoints > 0 && randomMonster.healthPoints > 0) {
+        para = document.createElement("P");
+        t = document.createTextNode("Your total damage is " + totalDamageCharacter + ". Your enemy's total damage is " + totalDamageMonster + ". Your actual health points are: " + character.actHealthPoints + ". Your enemy is stronger than you! You don't want to die so you run as you can. Fortunately the " + randomMonster.name + " doesn't have enough strenght to follow you.");
+        para.appendChild(t);
+        document.getElementById("text").appendChild(para);
+        randomMonster.healthPoints = randomMonster.maxHealthPoints;
+        character.updateDetails();
+        isBattle = false;
+      }
+      else if (character.actHealthPoints >= character.maxHealthPoints * (30 / 100) && randomMonster.healthPoints > 0) {
+        characterDamageThisRound = Math.floor((Math.random() * character.damage) + 1) + character.level + character.weaponInHand.damageBonus;
+        monsterDamageThisRound = Math.floor((Math.random() * randomMonster.damage) + 1);
+        isBattle = true;
+      }
+      else if (character.actHealthPoints <= 0) {
+        gameOver();
+        isBattle = false; 
+      }
+    }
+    else if (characterHitChance >= randomNumberForCharacter && randomMonster.attack < randomNumberForMonster) {
+      para = document.createElement("P");
+      t = document.createTextNode(roundNumber + ".round: You hit the" + " " + randomMonster.name + ". Your damage is " + characterDamageThisRound + ". The " + randomMonster.name + " did not hit you.");
+      para.appendChild(t);
+      document.getElementById("text").appendChild(para);
+      totalDamageCharacter += characterDamageThisRound;
+      randomMonster.healthPoints -= characterDamageThisRound;
+      roundNumber = roundNumber + 1;
+      if (character.actHealthPoints > 0 && randomMonster.healthPoints <= 0) {
+        para = document.createElement("P");
+        t = document.createTextNode("Your total damage is " + totalDamageCharacter + ". Your enemy's total damage is " + totalDamageMonster + ". Your actual health points are: " + character.actHealthPoints + ". You defeated the " + randomMonster.name + " and got " + randomMonster.xp + " experience points.");
+        para.appendChild(t);
+        document.getElementById("text").appendChild(para);
+        character.actExpBuffer += randomMonster.xp;
+        randomMonster.healthPoints = randomMonster.maxHealthPoints;
+        levelChecker();
+        character.updateDetails();
+        isBattle = false;
+        killerChecker(randomMonster.name);
+        findingItem(randomMonster.itemID, randomMonster.itemName, randomMonster.quantity, randomMonster.odd);
+      }
+      else if (character.actHealthPoints < character.maxHealthPoints * (30 / 100) && character.actHealthPoints > 0 && randomMonster.healthPoints > 0) {
+        para = document.createElement("P");
+        t = document.createTextNode("Your total damage is " + totalDamageCharacter + ". Your enemy's total damage is " + totalDamageMonster + ". Your actual health points are: " + character.actHealthPoints + ". Your enemy is stronger than you! You don't want to die so you run as you can. Fortunately the " + randomMonster.name + " doesn't have enough strenght to follow you.");
+        para.appendChild(t);
+        document.getElementById("text").appendChild(para);
+        randomMonster.healthPoints = randomMonster.maxHealthPoints;
+        character.updateDetails();
+        isBattle = false;
+      }
+      else if (character.actHealthPoints >= character.maxHealthPoints * (30 / 100) && randomMonster.healthPoints > 0) {
+        characterDamageThisRound = Math.floor((Math.random() * character.damage) + 1) + character.level + character.weaponInHand.damageBonus;
+        monsterDamageThisRound = Math.floor((Math.random() * randomMonster.damage) + 1);
+        isBattle = true;
+      }
+      else if (character.actHealthPoints <= 0) {
+        gameOver();
+        isBattle = false; 
+      }
+    }
+    else if (characterHitChance < randomNumberForCharacter && randomMonster.attack >= randomNumberForMonster) {
+      para = document.createElement("P");
+      t = document.createTextNode(roundNumber + ".round: You did not hit the" + " " + randomMonster.name + ".  The " + randomMonster.name + " hits you. Its damage is " + monsterDamageThisRound + ".");
+      para.appendChild(t);
+      document.getElementById("text").appendChild(para);
+      totalDamageMonster += monsterDamageThisRound;
+      character.actHealthPoints -= monsterDamageThisRound;
+      roundNumber = roundNumber + 1;
+      if (character.actHealthPoints > 0 && randomMonster.healthPoints <= 0) {
+        para = document.createElement("P");
+        t = document.createTextNode("Your total damage is " + totalDamageCharacter + ". Your enemy's total damage is " + totalDamageMonster + ". Your actual health points are: " + character.actHealthPoints + ". You defeated the " + randomMonster.name + " and got " + randomMonster.xp + " experience points.");
+        para.appendChild(t);
+        document.getElementById("text").appendChild(para);
+        character.actExpBuffer += randomMonster.xp;
+        randomMonster.healthPoints = randomMonster.maxHealthPoints;
+        levelChecker();
+        character.updateDetails();
+        isBattle = false;
+        killerChecker(randomMonster.name);
+        findingItem(randomMonster.itemID, randomMonster.itemName, randomMonster.quantity, randomMonster.odd);
+      }
+      else if (character.actHealthPoints < character.maxHealthPoints * (30 / 100) && character.actHealthPoints > 0 && randomMonster.healthPoints > 0) {
+        para = document.createElement("P");
+        t = document.createTextNode("Your total damage is " + totalDamageCharacter + ". Your enemy's total damage is " + totalDamageMonster + ". Your actual health points are: " + character.actHealthPoints + ". Your enemy is stronger than you! You don't want to die so you run as you can. Fortunately the " + randomMonster.name + " doesn't have enough strenght to follow you.");
+        para.appendChild(t);
+        document.getElementById("text").appendChild(para);
+        randomMonster.healthPoints = randomMonster.maxHealthPoints;
+        character.updateDetails();
+        isBattle = false;
+      }
+      else if (character.actHealthPoints >= character.maxHealthPoints * (30 / 100) && randomMonster.healthPoints > 0) {
+        characterDamageThisRound = Math.floor((Math.random() * character.damage) + 1) + character.level + character.weaponInHand.damageBonus;
+        monsterDamageThisRound = Math.floor((Math.random() * randomMonster.damage) + 1);
+        isBattle = true;
+      }
+      else if (character.actHealthPoints <= 0) {
+        gameOver();
+        isBattle = false; 
+      }
+    }
+    else {
+      para = document.createElement("P");
+      t = document.createTextNode(roundNumber + ".round: No one hit in this round.");
+      para.appendChild(t);
+      document.getElementById("text").appendChild(para);
+      characterDamageThisRound = Math.floor((Math.random() * character.damage) + 1) + character.level + character.weaponInHand.damageBonus;
+      monsterDamageThisRound = Math.floor((Math.random() * randomMonster.damage) + 1);
+      roundNumber = roundNumber + 1;
+
+    }
+  }//end of loop
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////find-item-function//////////////////////////////////////////////////////////////////////////////////////////////
+
+function findItem() {
+  var randomItem = items[Math.floor(Math.random() * items.length)];
+  var randomQuantity = Math.floor((Math.random() * 3) + 1);
+  var newItem = new CharacterItemList (randomItem.id, randomQuantity, randomItem.name);
+  var doesContain = false;
+  for (i=0; i < characterItemList.length; i++) {
+    if (randomItem.name === characterItemList[i].name) {
+      doesContain = true;
+      characterItemList[i].quantity += randomQuantity; 
+    }
+  }
+  if (doesContain === false) {
+    characterItemList.push(newItem);
+  }
+  document.getElementById("itemlist").innerHTML ="";
+  var para = document.createElement("P");
+  var t = document.createTextNode("What a luck! You found " + randomQuantity + " " + randomItem.name + ".");
+  para.appendChild(t);
+  document.getElementById("text").appendChild(para);
+  characterItemLister();
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////finding-item-function//////////////////////////////////////////////////////////////////////////////////////////////
+
+function findingItem(itemID, itemName, quantity, odd) {
+  var randomNumber = Math.floor((Math.random() * 100) + 1);
+  var randomQuantity = Math.floor((Math.random() * quantity) + 1);
+  if (randomNumber <= odd) {
+    addItem(itemID, randomQuantity, itemName);
+  }
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////add-item-function//////////////////////////////////////////////////////////////////////////////////////////////
+
+function addItem(itemID, quantity, name) {
+  var newItem = new CharacterItemList (itemID, quantity, name);
+  var doesContain = false;
+  for (i=0; i < characterItemList.length; i++) {
+    if (name === characterItemList[i].name) {
+      doesContain = true;
+      characterItemList[i].quantity += quantity; 
+    }
+  }
+  if (doesContain === false) {
+    characterItemList.push(newItem);
+  }
+  document.getElementById("itemlist").innerHTML ="";
+  var para = document.createElement("P");
+  var t = document.createTextNode("You ransack the monster. What a luck! You found " + quantity + " " + name + ".");
+  para.appendChild(t);
+  document.getElementById("text").appendChild(para);
+  characterItemLister();
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////take-weapon-function/////////////////////////////////////////////////////////////////////////////////////////////
+
+function takeWeapon(weaponID) { 
+      character.weaponInHand = weapons[weaponID-1];
+      var para = document.createElement("P");
+      var t = document.createTextNode("You take the " + weapons[weaponID-1].name + ".");
+      para.appendChild(t);
+      document.getElementById("text").appendChild(para);
+} 
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////move-functions////////////////////////////////////////////////////////////////////////////////////////////////////
+
+function battleOdd() {
+  var eventOdd = Math.floor((Math.random() * 2) + 1);
+    if (eventOdd === 1) {
+      battle();
+      }
+}
+
+function turnBack() {
+      document.getElementById("text").innerHTML ="";    
+      var para = document.createElement("P");
+      var t = document.createTextNode("You don't want to go back to the radioactive contaminated area so you turn back instead.");
+      para.appendChild(t);
+      document.getElementById("text").appendChild(para);
+}
+
+function move(direction) {
+  switch(direction) {
+    case 1:
+        character.yCoordinate += 1;
+        if (character.yCoordinate === 0 || character.yCoordinate === 11 || character.xCoordinate === 0 || character.xCoordinate === 11) {
+            turnBack();
+            character.yCoordinate -= 1;
+          }
+        else {
+          terrainIdentifier(character.xCoordinate, character.yCoordinate);
+          battleOdd();
+        }
+        break;
+    case 2:
+        character.yCoordinate += 1;
+        character.xCoordinate += 1;
+        if (character.yCoordinate === 0 || character.yCoordinate === 11 || character.xCoordinate === 0 || character.xCoordinate === 11) {
+            turnBack();
+            character.yCoordinate -= 1;
+            character.xCoordinate -= 1;
+          }
+        else {
+          terrainIdentifier(character.xCoordinate, character.yCoordinate);
+          battleOdd();
+        }
+        break;
+    case 3:
+        character.xCoordinate += 1;
+        if (character.yCoordinate === 0 || character.yCoordinate === 11 || character.xCoordinate === 0 || character.xCoordinate === 11) {
+            turnBack();
+            character.xCoordinate -= 1;
+          }
+        else {
+          terrainIdentifier(character.xCoordinate, character.yCoordinate);
+          battleOdd();
+        }
+        break;
+    case 4:
+        character.yCoordinate -= 1;
+        character.xCoordinate += 1;
+        if (character.yCoordinate === 0 || character.yCoordinate === 11 || character.xCoordinate === 0 || character.xCoordinate === 11) {
+            turnBack();
+            character.yCoordinate += 1;
+            character.xCoordinate -= 1;
+          }
+        else {
+          terrainIdentifier(character.xCoordinate, character.yCoordinate);
+          battleOdd();
+        }
+        break;
+    case 5:
+        character.yCoordinate -= 1;
+        if (character.yCoordinate === 0 || character.yCoordinate === 11 || character.xCoordinate === 0 || character.xCoordinate === 11) {
+            turnBack();
+            character.yCoordinate += 1;
+          }
+        else {
+          terrainIdentifier(character.xCoordinate, character.yCoordinate);
+          battleOdd();
+        }
+        break;
+    case 6:
+        character.yCoordinate -= 1;
+        character.xCoordinate -= 1;
+        if (character.yCoordinate === 0 || character.yCoordinate === 11 || character.xCoordinate === 0 || character.xCoordinate === 11) {
+            turnBack();
+            character.yCoordinate += 1;
+            character.xCoordinate += 1;
+          }
+        else {
+          terrainIdentifier(character.xCoordinate, character.yCoordinate);
+          battleOdd();
+        }
+        break;
+    case 7:
+        character.xCoordinate -= 1;
+        if (character.yCoordinate === 0 || character.yCoordinate === 11 || character.xCoordinate === 0 || character.xCoordinate === 11) {
+            turnBack();
+            character.xCoordinate += 1;
+          }
+        else {
+          terrainIdentifier(character.xCoordinate, character.yCoordinate);
+          battleOdd();
+        }
+        break;
+    case 8:
+        character.yCoordinate += 1;
+        character.xCoordinate -= 1;
+        if (character.yCoordinate === 0 || character.yCoordinate === 11 || character.xCoordinate === 0 || character.xCoordinate === 11) {
+            turnBack();
+            character.yCoordinate -= 1;
+            character.xCoordinate += 1;
+          }
+        else {
+          terrainIdentifier(character.xCoordinate, character.yCoordinate);
+          battleOdd();
+        }
+        break;
+}
+  character.showCoordinates();
+}
+
+document.getElementById("button-n").addEventListener("click", function() {
+  move(1);
+});
+
+document.getElementById("button-ne").addEventListener("click", function() {
+  move(2);
+});
+
+document.getElementById("button-e").addEventListener("click", function() {
+  move(3);
+});
+
+document.getElementById("button-se").addEventListener("click", function() {
+  move(4);
+});
+
+document.getElementById("button-s").addEventListener("click", function() {
+  move(5);
+});
+
+document.getElementById("button-sw").addEventListener("click", function() {
+  move(6);
+});
+
+document.getElementById("button-w").addEventListener("click", function() {
+  move(7);
+});
+
+document.getElementById("button-nw").addEventListener("click", function() {
+  move(8);
+});
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////game-over////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+function gameOver() {
+  document.getElementById("navigation").style.display="none";
+  var para = document.createElement("P");
+  var t = document.createTextNode("You had no luck! The monster chops off your head. Your adventure ends here...");
+  para.appendChild(t);
+  document.getElementById("text").appendChild(para);
+  document.getElementById("itemlist").innerHTML ="";
+
+}
+
+
+
+
+
+
+
+
+
+</script>
+</body>
+</html>
