@@ -123,7 +123,7 @@ body {
         <p>Welcome to Survivers' Land. After a global war our known world went back to the Stone Age. A few of survivors managed to get a tiny piece of land remained unburnt. They need to tackle with the changed environment that was born after toxic gases had poisoned life.</p>
         <h3>Create your character!</h3>
         <h4>Name</h4>
-        <input id="name" value="Chlovia"></input>
+        <input id="name" value=""></input>
         <h4>Gender</h4>
         <select id="gender">
           <option value="female">Female</option>
@@ -145,6 +145,7 @@ body {
         <button id="button-sw">SW</button>
         <button id="button-w">W</button>
         <button id="button-nw">NW</button>
+        <button id="instructions">Instructions</button>
     </div> 
   </div>
 
@@ -442,7 +443,7 @@ document.getElementById("text").addEventListener("click", function() {
   enterBuilding(event.target.id); 
 });
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////character-generator////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////character-generator////////////////////////////////////////////////////////////////////////////////////////////
 
 function character (name, gender) {
   character.name = name;
@@ -946,6 +947,10 @@ function turnBack() {
       document.getElementById("text").appendChild(para);
 }
 
+function instructions() {
+  alert("The gamearea is a 10x10 grip where move can be made by clicking the direction buttons indicating the quarters.\nThe three columns show the character details, the story and the item and weapon list (from left to right).\nThe items and weapons can be used by clicking on them.\nWhen you find a biulding you can enter by clicking the name of the building in the storyline area.");
+}
+
 function move(direction) {
   switch(direction) {
     case 1:
@@ -1078,6 +1083,10 @@ document.getElementById("button-w").addEventListener("click", function() {
 
 document.getElementById("button-nw").addEventListener("click", function() {
   move(8);
+});
+
+document.getElementById("instructions").addEventListener("click", function() {
+  instructions();
 });
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////game-over////////////////////////////////////////////////////////////////////////////////////////////////////////
